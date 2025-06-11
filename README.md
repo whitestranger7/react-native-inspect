@@ -10,13 +10,24 @@ A powerful CLI tool for analyzing React Native projects, generating comprehensiv
 - 🚀 **React Native Specific**: Tailored analysis for React Native projects
 - 🔧 **Multiple Package Managers**: Support for npm, yarn, and pnpm
 
+## Requirements
+
+- [Bun](https://bun.sh/) runtime
+
 ## Installation
 
+### Install Bun (if not already installed)
 ```bash
-# Install globally
-npm install -g react-native-inspect
+curl -fsSL https://bun.sh/install | bash
+```
 
-# Or run directly with npx
+### Recommended: Global Installation
+```bash
+npm install -g react-native-inspect
+```
+
+### One-time Usage
+```bash
 npx react-native-inspect
 ```
 
