@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "type": "module",
+  "preferGlobal": true,
   "bin": {
     "react-native-inspect": "dist/index.js"
   },
