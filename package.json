@@ -29,7 +29,12 @@
     "audit",
     "report",
     "inspect",
-    "tool"
+    "tool",
+    "mobile",
+    "bun",
+    "vulnerability",
+    "outdated",
+    "packages"
   ],
   "author": "Ivan Vezhnavets",
   "license": "MIT",
@@ -42,13 +47,10 @@
     "url": "https://github.com/whitestranger7/react-native-inspect/issues"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "bun": ">=1.0.0"
   },
   "devDependencies": {
     "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "5.8.3"
   },
   "dependencies": {
     "chalk": "5.4.1",
