@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Native Inspect Report</title>
+    <style>
+        /* CSS_PLACEHOLDER */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 React Native Inspect Report</h1>
+            <div class="meta">
+                <div class="meta-item">
+                    <strong>Generated</strong>
+                    {{GENERATED_DATE}}
+                </div>
+                <div class="meta-item">
+                    <strong>Project Path</strong>
+                    {{PROJECT_PATH}}
+                </div>
+                <div class="meta-item">
+                    <strong>Package Manager</strong>
+                    {{PACKAGE_MANAGER}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-container">
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="dependencies">
+                    📦 Dependencies Analysis
+                    <span class="tab-badge {{OUTDATED_BADGE_CLASS}}">{{OUTDATED_COUNT}}</span>
+                </button>
+                <button class="tab-btn" data-tab="security">
+                    🔒 Security Audit
+                    <span class="tab-badge {{SECURITY_BADGE_CLASS}}">{{TOTAL_VULNERABILITIES}}</span>
+                </button>
+                <button class="tab-btn" data-tab="react-native">
+                    ⚛️ React Native
+                    <span class="tab-badge {{RN_ARCHITECTURE_BADGE_CLASS}}">{{RN_ARCHITECTURE_STATUS}}</span>
+                </button>
+                <button class="tab-btn" data-tab="summary">
+                    📊 Summary
+                </button>
+            </div>
+
+            <!-- Dependencies Analysis Tab -->
+            <div class="tab-content active" id="dependencies">
+                <div class="section-content">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number">{{TOTAL_DEPENDENCIES}}</span>
+                            <div class="stat-label">Dependencies</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">{{TOTAL_DEV_DEPENDENCIES}}</span>
+                            <div class="stat-label">Dev Dependencies</div>
+                        </div>
+                        <div class="stat-card {{OUTDATED_BADGE_CLASS}}">
+                            <span class="stat-number">{{OUTDATED_COUNT}}</span>
+                            <div class="stat-label">Outdated Packages</div>
+                        </div>
+                        <div class="stat-card {{MAJOR_UPDATES_BADGE_CLASS}}">
+                            <span class="stat-number">{{MAJOR_UPDATES_COUNT}}</span>
+                            <div class="stat-label">Major Updates</div>
+                        </div>
+                    </div>
+
+                    {{DEPENDENCIES_TABLE_SECTION}}
+                </div>
+            </div>
+
+            <!-- Security Audit Tab -->
+            <div class="tab-content" id="security">
+                <div class="section-content">
+                    {{SECURITY_AUDIT_SECTION}}
+                </div>
+            </div>
+
+            <!-- React Native Tab -->
+            <div class="tab-content" id="react-native">
+                <div class="section-content">
+                    {{REACT_NATIVE_SECTION}}
+                </div>
+            </div>
+
+            <!-- Summary Tab -->
+            <div class="tab-content" id="summary">
+                <div class="section-content">
+                    <div class="stats-grid">
+                        <div class="stat-card {{DEPENDENCIES_STATUS_BADGE_CLASS}}">
+                            <span class="stat-number">{{DEPENDENCIES_STATUS_ICON}}</span>
+                            <div class="stat-label">Dependencies Status</div>
+                        </div>
+                        <div class="stat-card {{SECURITY_STATUS_BADGE_CLASS}}">
+                            <span class="stat-number">{{SECURITY_STATUS_ICON}}</span>
+                            <div class="stat-label">Security Status</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: rgba(52, 152, 219, 0.1); border-radius: 10px; border-left: 4px solid #3498db;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">Recommendations</h3>
+                        <ul style="color: #495057; line-height: 1.6;">
+                            {{RECOMMENDATIONS}}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        {{INLINED_JS}}
+    </script>
+</body>
+</html> 

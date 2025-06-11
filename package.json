@@ -1,0 +1,57 @@
+{
+  "name": "react-native-inspect",
+  "version": "0.0.1",
+  "description": "A powerful CLI tool for analyzing React Native projects, generating comprehensive reports with recommendations and analysis",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "react-native-inspect": "dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENCE"
+  ],
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "test": "bun test",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "react-native", 
+    "cli", 
+    "analysis", 
+    "dependencies", 
+    "security",
+    "audit",
+    "report",
+    "inspect",
+    "tool"
+  ],
+  "author": "Ivan Vezhnavets",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whitestranger7/react-native-inspect.git"
+  },
+  "homepage": "https://github.com/whitestranger7/react-native-inspect#readme",
+  "bugs": {
+    "url": "https://github.com/whitestranger7/react-native-inspect/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "5.8.3"
+  },
+  "dependencies": {
+    "chalk": "5.4.1",
+    "ora": "^8.2.0"
+  }
+}

@@ -1,0 +1,1 @@
+export { analyzeReactNative } from './analyzer'; 
