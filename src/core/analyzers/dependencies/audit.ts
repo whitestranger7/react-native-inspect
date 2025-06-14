@@ -13,7 +13,6 @@ export async function runSecurityAudit(
   try {
     return await runAudit(packageManager, projectPath);
   } catch (error) {
-    // Handle cases where no lockfile exists or audit fails
     if (error instanceof Error && (
       error.message.includes('ENOLOCK') || 
       error.message.includes('requires existing lockfile') ||
@@ -26,7 +25,6 @@ export async function runSecurityAudit(
       return null;
     }
     
-    // Handle yarn specific errors
     if (packageManager === 'yarn' && error instanceof Error) {
       if (error.message.includes('Unknown option') || 
           error.message.includes('Invalid option') ||

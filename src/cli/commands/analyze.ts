@@ -8,7 +8,6 @@ export async function analyzeCommand(projectPath: string = process.cwd()): Promi
   try {
     Logger.title('React Native Inspect - Starting Analysis...');
     
-    // Package manager detection and dependency analysis
     SpinnerManager.start('Detecting package manager and analyzing dependencies...');
     const dependencyResult = await analyzeDependencies(projectPath);
     
@@ -19,7 +18,6 @@ export async function analyzeCommand(projectPath: string = process.cwd()): Promi
       SpinnerManager.warn(`Found ${outdatedCount} outdated dependencies (${dependencyResult.majorUpdatesCount} major updates)`);
     }
 
-    // Security audit summary
     if (dependencyResult.auditReport) {
       const totalVulns = dependencyResult.auditReport.metadata.vulnerabilities.total;
       const criticalCount = dependencyResult.auditReport.metadata.vulnerabilities.critical;
@@ -38,7 +36,6 @@ export async function analyzeCommand(projectPath: string = process.cwd()): Promi
       Logger.info('Security audit skipped (no lockfile found)');
     }
 
-    // React Native analysis
     SpinnerManager.start('Analyzing React Native project configuration...');
     const reactNativeResult = await analyzeReactNative(projectPath);
     

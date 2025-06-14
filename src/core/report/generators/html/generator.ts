@@ -9,26 +9,22 @@ export async function generateHTMLReport(
 ): Promise<string> {
   const outputPath = config.outputPath || join(process.cwd(), 'react-native-inspect-report.html');
   
-  // Paths to template files
   const templateDir = join(__dirname, '../../templates');
   const htmlTemplatePath = join(templateDir, 'web', 'index.html');
   const cssSourcePath = join(templateDir, 'styles', 'report.css');
   const jsSourcePath = join(templateDir, 'js', 'report.js');
   
-  // Read template files
   const [htmlTemplate, cssContent, jsContent] = await Promise.all([
     readFile(htmlTemplatePath, 'utf8'),
     readFile(cssSourcePath, 'utf8'),
     readFile(jsSourcePath, 'utf8')
   ]);
   
-  // Generate dynamic content sections
   const dependenciesTableSection = generateDependenciesTableSection(analysisResult);
   const securityAuditSection = generateSecurityAuditSection(analysisResult);
   const reactNativeSection = generateReactNativeSection(analysisResult);
   const recommendations = generateRecommendations(analysisResult);
   
-  // Replace placeholders in template
   const html = htmlTemplate
     .replaceAll('/* CSS_PLACEHOLDER */', cssContent)
     .replaceAll('{{INLINED_JS}}', jsContent)
@@ -124,7 +120,6 @@ function generateSecurityAuditSection(analysisResult: AnalysisResult): string {
   const auditReport = analysisResult.dependencies.auditReport;
   const vulnerabilities = auditReport.metadata?.vulnerabilities || {};
   
-  // Calculate the correct total using our utility function
   const totalVulnerabilities = getTotalVulnerabilities(analysisResult);
   
   const statsGrid = `
@@ -165,7 +160,6 @@ function generateSecurityAuditSection(analysisResult: AnalysisResult): string {
     `;
   }
   
-  // Filter to show only critical and high severity vulnerabilities
   const criticalAndHighVulns = Object.entries(auditReport.vulnerabilities)
     .filter(([_, vuln]: [string, any]) => {
       const severity = vuln.severity?.toLowerCase();
@@ -175,7 +169,6 @@ function generateSecurityAuditSection(analysisResult: AnalysisResult): string {
   const criticalCount = Object.values(auditReport.vulnerabilities).filter((vuln: any) => vuln.severity?.toLowerCase() === 'critical').length;
   const highCount = Object.values(auditReport.vulnerabilities).filter((vuln: any) => vuln.severity?.toLowerCase() === 'high').length;
   
-  // Get the metadata counts for comparison
   const metadataCritical = vulnerabilities.critical || 0;
   const metadataHigh = vulnerabilities.high || 0;
   const totalVulnObjects = Object.keys(auditReport.vulnerabilities).length;
@@ -191,7 +184,6 @@ function generateSecurityAuditSection(analysisResult: AnalysisResult): string {
     `;
   }
   
-  // Check if there's a discrepancy and explain it
   const discrepancyNote = (metadataCritical + metadataHigh > criticalCount + highCount) ? `
     <div style="background: rgba(255, 193, 7, 0.1); padding: 12px; border-radius: 6px; margin: 10px 0; border-left: 4px solid #ffc107;">
         <h5 style="color: #856404; margin: 0 0 5px 0;">📊 Vulnerability Analysis Note</h5>
@@ -268,7 +260,6 @@ function generateRecommendations(analysisResult: AnalysisResult): string {
     recommendations.push(`Address ${vulnerabilitiesTotal} security vulnerabilities`);
   }
 
-  // React Native recommendations
   if (analysisResult.reactNative.isReactNativeProject) {
     if (analysisResult.reactNative.newArchitectureStatus === 'disabled') {
       recommendations.push('Consider enabling React Native New Architecture for better performance');
@@ -293,7 +284,6 @@ function generateRecommendations(analysisResult: AnalysisResult): string {
 }
 
 function extractVersionNumber(versionString: string): number | null {
-  // Extract version number from strings like "^0.72.0" or "~0.71.8"
   const match = versionString.match(/(\d+)\.(\d+)\.(\d+)/);
   if (match) {
     const [, major, minor] = match;
@@ -319,10 +309,8 @@ function getTotalVulnerabilities(analysisResult: AnalysisResult): number {
   
   const vulns = analysisResult.dependencies.auditReport.metadata.vulnerabilities;
   
-  // Calculate total by summing all severity levels instead of relying on the total field
   const calculatedTotal = (vulns.critical || 0) + (vulns.high || 0) + (vulns.moderate || 0) + (vulns.low || 0) + (vulns.info || 0);
   
-  // Use the calculated total if it's greater than the reported total (handles cases where total might be wrong)
   return Math.max(calculatedTotal, vulns.total || 0);
 }
 

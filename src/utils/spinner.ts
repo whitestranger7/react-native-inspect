@@ -4,7 +4,6 @@ export class SpinnerManager {
   private static activeSpinner: Ora | null = null;
 
   static start(text: string): Ora {
-    // Stop any existing spinner
     if (SpinnerManager.activeSpinner) {
       SpinnerManager.activeSpinner.stop();
     }

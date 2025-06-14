@@ -46,21 +46,30 @@ export async function openReport(reportPath: string): Promise<void> {
                       : process.platform === 'win32' ? `start "" "${reportPath}"` 
                       : `xdg-open "${reportPath}"`;
     
-    exec(openCommand, (error) => {
-      if (error) {
-        SpinnerManager.warn('Could not open browser automatically');
-        Logger.info(`Please open the report manually: ${reportPath}`);
-      } else {
+    await new Promise<void>((resolve) => {
+      let resolved = false;
+      
+      exec(openCommand, (error) => {
+        if (resolved) return;
+        resolved = true;
+        
+        if (error) {
+          SpinnerManager.warn('Could not open browser automatically');
+          Logger.info(`Please open the report manually: ${reportPath}`);
+        } else {
+          SpinnerManager.succeed('Report opened in browser');
+        }
+        resolve();
+      });
+      
+      // Fallback timeout to prevent hanging
+      setTimeout(() => {
+        if (resolved) return;
+        resolved = true;
         SpinnerManager.succeed('Report opened in browser');
-      }
+        resolve();
+      }, 1000);
     });
-    
-    // Give a moment for the exec to start
-    setTimeout(() => {
-      if (SpinnerManager['activeSpinner']?.isSpinning) {
-        SpinnerManager.succeed('Report opened in browser');
-      }
-    }, 1000);
     
   } catch (browserError) {
     SpinnerManager.warn('Could not open browser automatically');

@@ -30,7 +30,6 @@ export async function checkOutdatedDependencies(
 
     let majorUpdatesCount = 0;
 
-    // Add dependency type to each outdated dependency
     for (const [name, info] of Object.entries(outdated) as [string, OutdatedDependencyInfo][]) {
       if (pkg.dependencies && pkg.dependencies[name]) {
         info.type = 'dependencies';
@@ -42,7 +41,6 @@ export async function checkOutdatedDependencies(
         info.type = 'optionalDependencies';
       }
 
-      // Count major updates
       const currentMajor = Number(info.current.split('.')[0]);
       const latestMajor = Number(info.latest.split('.')[0]);
       if (latestMajor > currentMajor) {
