@@ -48,14 +48,11 @@ export const runNpmCommand = async (
     const stdout = await new Response(child.stdout).text();
     const stderr = await new Response(child.stderr).text();
 
-    // For audit and outdated commands, we want to return stdout even if exit code is non-zero
-    // because vulnerabilities/outdated packages being found is expected behavior
     const isAuditCommand = command.includes('audit');
     const isOutdatedCommand = command.includes('outdated');
     
     if (child.exitCode !== 0) {
       if ((isAuditCommand || isOutdatedCommand) && stdout.trim()) {
-        // For audit/outdated commands, return the output even with non-zero exit code
         return stdout.trim();
       }
       throw new Error(`Command failed: ${managerCommand} ${command.join(' ')}\nWorking directory: ${cwd}\nExit code: ${child.exitCode}\nStderr: ${stderr}\nStdout: ${stdout}`);
@@ -79,10 +76,7 @@ export const getOutdatedPackages = async (
     
     if (!stdout) return {};
     
-    // Handle different package manager formats
     if (manager === 'yarn') {
-      // Yarn returns multiple JSON objects, one per line
-      // We need to find the "table" type which contains the outdated packages
       const lines = stdout.split('\n').filter(line => line.trim());
       
       for (const line of lines) {
@@ -103,7 +97,7 @@ export const getOutdatedPackages = async (
                       packageType === 'devDependencies' ? 'devDependencies' :
                       packageType === 'peerDependencies' ? 'peerDependencies' :
                       packageType === 'optionalDependencies' ? 'optionalDependencies' :
-                      'dependencies' // default fallback
+                      'dependencies'
               };
             }
             
@@ -115,13 +109,11 @@ export const getOutdatedPackages = async (
         }
       }
       
-      return {}; // No table found
+      return {};
     } else {
-      // npm and pnpm return a single JSON object
       return JSON.parse(stdout);
     }
   } catch (error) {
-    // npm/yarn outdated returns non-zero exit code when there are outdated packages
     if (error instanceof Error && error.message.includes('outdated')) {
       const match = error.message.match(/\{[\s\S]*\}/);
       if (match) {
@@ -141,10 +133,7 @@ export const runAudit = async (
     
     if (!stdout) return null;
     
-    // Handle different package manager formats
     if (manager === 'yarn') {
-      // Yarn returns multiple JSON objects, one per line
-      // We need to parse each line and build the audit report
       const lines = stdout.split('\n').filter(line => line.trim());
       
       const auditData: any = {
@@ -169,14 +158,12 @@ export const runAudit = async (
             const advisory = parsed.data.advisory;
             const resolution = parsed.data.resolution;
             
-            // Add to vulnerabilities
             auditData.vulnerabilities[advisory.id] = {
               ...advisory,
               effects: [resolution.path],
               range: advisory.vulnerable_versions
             };
-            
-            // Update metadata counts
+
             auditData.metadata.vulnerabilities.total++;
             if (advisory.severity === 'critical') auditData.metadata.vulnerabilities.critical++;
             else if (advisory.severity === 'high') auditData.metadata.vulnerabilities.high++;
@@ -184,11 +171,9 @@ export const runAudit = async (
             else if (advisory.severity === 'low') auditData.metadata.vulnerabilities.low++;
             else if (advisory.severity === 'info') auditData.metadata.vulnerabilities.info++;
           } else if (parsed.type === 'auditSummary' && parsed.data) {
-            // Use the summary data if available, but ensure total is correct
             const summaryVulns = parsed.data.vulnerabilities;
             auditData.metadata.vulnerabilities = {
               ...summaryVulns,
-              // Recalculate total to ensure it's correct
               total: (summaryVulns.critical || 0) + (summaryVulns.high || 0) + 
                      (summaryVulns.moderate || 0) + (summaryVulns.low || 0) + 
                      (summaryVulns.info || 0)

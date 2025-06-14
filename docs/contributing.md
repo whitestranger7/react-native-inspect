@@ -45,7 +45,7 @@ The project follows a modular architecture:
 Example:
 ```typescript
 // src/core/analyzers/performance/index.ts
-export async function analyzePerformance(projectPath: string): Promise<PerformanceAnalysisResult> {
+export const analyzePerformance = async (projectPath: string): Promise<PerformanceAnalysisResult> => {
   // Implementation
 }
 ```
