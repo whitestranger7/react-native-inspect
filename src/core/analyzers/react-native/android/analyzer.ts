@@ -1,7 +1,7 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
-export async function checkAndroidNewArch(projectPath: string): Promise<boolean> {
+export const checkAndroidNewArch = async (projectPath: string): Promise<boolean> => {
   try {
     const gradlePropsPath = join(projectPath, 'android', 'gradle.properties');
     const gradleContent = await readFile(gradlePropsPath, 'utf8');
@@ -14,7 +14,7 @@ export async function checkAndroidNewArch(projectPath: string): Promise<boolean>
   }
 }
 
-export async function checkAndroidHermesEnabled(projectPath: string): Promise<boolean> {
+export const checkAndroidHermesEnabled = async (projectPath: string): Promise<boolean> => {
   try {
     const gradlePropsPath = join(projectPath, 'android', 'gradle.properties');
     const gradleContent = await readFile(gradlePropsPath, 'utf8');

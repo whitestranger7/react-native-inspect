@@ -2,7 +2,7 @@ import { analyzeCommand } from './commands/analyze';
 import { reportCommand, openReport } from './commands/report';
 import { Logger } from '../utils/logger';
 
-export async function runCLI(): Promise<void> {
+export const runCLI = async (): Promise<void> => {
   try {
     const analysisResult = await analyzeCommand();
     

@@ -5,10 +5,10 @@ import { SpinnerManager } from '../../utils/spinner';
 import type { AnalysisResult } from '../../types/analysis';
 import type { ReportConfig } from '../../types/report';
 
-export async function reportCommand(
+export const reportCommand = async (
   analysisResult: AnalysisResult, 
   config: ReportConfig = { format: 'html' }
-): Promise<string> {
+): Promise<string> => {
   try {
     SpinnerManager.start('Generating report...');
     

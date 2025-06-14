@@ -2,9 +2,10 @@ import { analyzeDependencies } from '../../core/analyzers/dependencies';
 import { analyzeReactNative } from '../../core/analyzers/react-native';
 import { Logger } from '../../utils/logger';
 import { SpinnerManager } from '../../utils/spinner';
+
 import type { AnalysisResult } from '../../types/analysis';
 
-export async function analyzeCommand(projectPath: string = process.cwd()): Promise<AnalysisResult> {
+export const analyzeCommand = async (projectPath: string = process.cwd()): Promise<AnalysisResult> => {
   try {
     Logger.title('React Native Inspect - Starting Analysis...');
     

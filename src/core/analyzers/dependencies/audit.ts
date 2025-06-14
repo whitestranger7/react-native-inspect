@@ -1,10 +1,11 @@
 import { runAudit } from '../../../utils/npm';
+
 import type { PackageManager, AuditReport } from '../../../types/analysis';
 
-export async function runSecurityAudit(
+export const runSecurityAudit = async (
   packageManager: PackageManager, 
   projectPath: string = process.cwd()
-): Promise<AuditReport | null> {
+): Promise<AuditReport | null> => {
   if (!packageManager) {
     console.warn('⚠️  No package manager detected, skipping security audit');
     return null;

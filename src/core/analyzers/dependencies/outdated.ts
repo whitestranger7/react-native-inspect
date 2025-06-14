@@ -1,15 +1,16 @@
 import { readPackageJson } from '../../../utils/fs';
 import { getOutdatedPackages } from '../../../utils/npm';
+
 import type { 
   OutdatedDependencyInfo, 
   PackageManager, 
   DependencyAnalysisResult 
 } from '../../../types/analysis';
 
-export async function checkOutdatedDependencies(
+export const checkOutdatedDependencies = async (
   projectPath: string, 
   packageManager: PackageManager
-): Promise<Omit<DependencyAnalysisResult, 'packageManager'>> {
+): Promise<Omit<DependencyAnalysisResult, 'packageManager'>> => {
   try {
     const pkg = await readPackageJson(projectPath);
 

@@ -4,7 +4,7 @@ import { existsSync, statSync } from 'fs';
 
 import type { PackageManager } from '../types/analysis';
 
-export async function detectPackageManager(projectRoot: string): Promise<PackageManager> {
+export const detectPackageManager = async (projectRoot: string): Promise<PackageManager> => {
   const lockFiles = {
     npm: "package-lock.json",
     yarn: "yarn.lock", 
@@ -31,11 +31,11 @@ export async function detectPackageManager(projectRoot: string): Promise<Package
   return candidates[0]?.manager || null;
 }
 
-export async function runNpmCommand(
+export const runNpmCommand = async (
   command: string[], 
   manager: PackageManager = 'npm', 
   cwd: string = process.cwd()
-): Promise<string> {
+): Promise<string> => {
   const managerCommand = manager || 'npm';
   
   try {
@@ -70,10 +70,10 @@ export async function runNpmCommand(
   }
 }
 
-export async function getOutdatedPackages(
+export const getOutdatedPackages = async (
   manager: PackageManager = 'npm', 
   projectPath: string = process.cwd()
-): Promise<Record<string, any>> {
+): Promise<Record<string, any>> => {
   try {
     const stdout = await runNpmCommand(['outdated', '--json'], manager, projectPath);
     
@@ -132,10 +132,10 @@ export async function getOutdatedPackages(
   }
 }
 
-export async function runAudit(
+export const runAudit = async (
   manager: PackageManager = 'npm', 
   projectPath: string = process.cwd()
-): Promise<any> {
+): Promise<any> => {
   try {
     const stdout = await runNpmCommand(['audit', '--json'], manager, projectPath);
     

@@ -1,9 +1,10 @@
 import { detectPackageManager } from '../../../utils/npm';
 import { checkOutdatedDependencies } from './outdated';
 import { runSecurityAudit } from './audit';
-import type { DependencyAnalysisResult, PackageManager } from '../../../types/analysis';
 
-export async function analyzeDependencies(projectPath: string): Promise<DependencyAnalysisResult> {
+import type { DependencyAnalysisResult } from '../../../types/analysis';
+
+export const analyzeDependencies = async (projectPath: string): Promise<DependencyAnalysisResult> => {
   const packageManager = await detectPackageManager(projectPath);
   
   const outdatedResult = await checkOutdatedDependencies(projectPath, packageManager);

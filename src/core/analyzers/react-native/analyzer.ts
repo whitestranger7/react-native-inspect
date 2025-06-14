@@ -4,7 +4,7 @@ import type { ReactNativeAnalysisResult } from '../../../types/analysis';
 import { checkAndroidNewArch, checkAndroidHermesEnabled } from './android/analyzer';
 import { checkIOSNewArch, checkIOSHermesEnabled } from './ios/analyzer';
 
-export async function analyzeReactNative(projectPath: string): Promise<ReactNativeAnalysisResult> {
+export const analyzeReactNative = async (projectPath: string): Promise<ReactNativeAnalysisResult> => {
   try {
     const reactNativeVersion = await getReactNativeVersion(projectPath);
     
@@ -36,7 +36,7 @@ export async function analyzeReactNative(projectPath: string): Promise<ReactNati
   }
 }
 
-async function getReactNativeVersion(projectPath: string): Promise<string | null> {
+const getReactNativeVersion = async (projectPath: string): Promise<string | null> => {
   try {
     const packageJsonPath = join(projectPath, 'package.json');
     const packageJsonContent = await readFile(packageJsonPath, 'utf8');
@@ -48,7 +48,7 @@ async function getReactNativeVersion(projectPath: string): Promise<string | null
   }
 }
 
-async function checkNewArchitectureStatus(projectPath: string): Promise<'enabled' | 'disabled' | 'unknown'> {
+const checkNewArchitectureStatus = async (projectPath: string): Promise<'enabled' | 'disabled' | 'unknown'> => {
   try {
     const checks = await Promise.allSettled([
       checkAndroidNewArch(projectPath),
@@ -74,7 +74,7 @@ async function checkNewArchitectureStatus(projectPath: string): Promise<'enabled
   }
 }
 
-async function checkReactNativeConfig(projectPath: string): Promise<boolean> {
+const checkReactNativeConfig = async (projectPath: string): Promise<boolean> => {
   try {
     const configPath = join(projectPath, 'react-native.config.js');
     const configContent = await readFile(configPath, 'utf8');
@@ -85,10 +85,10 @@ async function checkReactNativeConfig(projectPath: string): Promise<boolean> {
   }
 }
 
-function generateRecommendations(
+const generateRecommendations = (
   newArchStatus: 'enabled' | 'disabled' | 'unknown',
   reactNativeVersion?: string
-): string[] {
+): string[] => {
   const recommendations: string[] = [];
 
   if (newArchStatus === 'disabled') {
@@ -128,7 +128,7 @@ function generateRecommendations(
   return recommendations;
 }
 
-function extractVersionNumber(versionString: string): number | null {
+const extractVersionNumber = (versionString: string): number | null => {
   const match = versionString.match(/(\d+)\.(\d+)\.(\d+)/);
   if (match) {
     const [, major, minor] = match;

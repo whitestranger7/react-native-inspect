@@ -1,12 +1,13 @@
 import { writeFile, readFile } from 'fs/promises';
 import { join } from 'path';
+
 import type { AnalysisResult } from '../../../../types/analysis';
 import type { ReportConfig } from '../../../../types/report';
 
-export async function generateHTMLReport(
+export const generateHTMLReport = async (
   analysisResult: AnalysisResult, 
   config: ReportConfig = { format: 'html' }
-): Promise<string> {
+): Promise<string> => {
   const outputPath = config.outputPath || join(process.cwd(), 'react-native-inspect-report.html');
   
   const templateDir = join(__dirname, '../../templates');
@@ -54,7 +55,7 @@ export async function generateHTMLReport(
   return outputPath;
 }
 
-function generateDependenciesTableSection(analysisResult: AnalysisResult): string {
+const generateDependenciesTableSection = (analysisResult: AnalysisResult): string => {
   if (Object.keys(analysisResult.dependencies.outdatedDependencies).length === 0) {
     return `
       <div class="success-message">
@@ -107,7 +108,7 @@ function generateDependenciesTableSection(analysisResult: AnalysisResult): strin
   `;
 }
 
-function generateSecurityAuditSection(analysisResult: AnalysisResult): string {
+const generateSecurityAuditSection = (analysisResult: AnalysisResult): string => {
   if (!analysisResult.dependencies.auditReport) {
     return `
       <div class="success-message">
@@ -244,7 +245,7 @@ function generateSecurityAuditSection(analysisResult: AnalysisResult): string {
   `;
 }
 
-function generateRecommendations(analysisResult: AnalysisResult): string {
+const generateRecommendations = (analysisResult: AnalysisResult): string => {
   const recommendations: string[] = [];
   
   if (analysisResult.dependencies.majorUpdatesCount > 0) {
@@ -283,7 +284,7 @@ function generateRecommendations(analysisResult: AnalysisResult): string {
   return recommendations.map(rec => `<li>${rec}</li>`).join('');
 }
 
-function extractVersionNumber(versionString: string): number | null {
+const extractVersionNumber = (versionString: string): number | null => {
   const match = versionString.match(/(\d+)\.(\d+)\.(\d+)/);
   if (match) {
     const [, major, minor] = match;
@@ -292,17 +293,17 @@ function extractVersionNumber(versionString: string): number | null {
   return null;
 }
 
-function getSecurityStatusBadgeClass(analysisResult: AnalysisResult): string {
+const getSecurityStatusBadgeClass = (analysisResult: AnalysisResult): string => {
   const vulnerabilitiesTotal = getTotalVulnerabilities(analysisResult);
   return !analysisResult.dependencies.auditReport || vulnerabilitiesTotal === 0 ? 'success' : 'danger';
 }
 
-function getSecurityStatusIcon(analysisResult: AnalysisResult): string {
+const getSecurityStatusIcon = (analysisResult: AnalysisResult): string => {
   const vulnerabilitiesTotal = getTotalVulnerabilities(analysisResult);
   return !analysisResult.dependencies.auditReport || vulnerabilitiesTotal === 0 ? '🛡️' : '⚠️';
 }
 
-function getTotalVulnerabilities(analysisResult: AnalysisResult): number {
+const getTotalVulnerabilities = (analysisResult: AnalysisResult): number => {
   if (!analysisResult.dependencies.auditReport?.metadata?.vulnerabilities) {
     return 0;
   }
@@ -314,14 +315,14 @@ function getTotalVulnerabilities(analysisResult: AnalysisResult): number {
   return Math.max(calculatedTotal, vulns.total || 0);
 }
 
-function getSecurityBadgeClass(analysisResult: AnalysisResult): string {
+const getSecurityBadgeClass = (analysisResult: AnalysisResult): string => {
   const vulnerabilitiesTotal = getTotalVulnerabilities(analysisResult);
   if (vulnerabilitiesTotal === 0) return 'success';
   if (vulnerabilitiesTotal > 10) return 'danger';
   return 'warning';
 }
 
-function generateReactNativeSection(analysisResult: AnalysisResult): string {
+const generateReactNativeSection = (analysisResult: AnalysisResult): string => {
   const rnResult = analysisResult.reactNative;
   
   if (!rnResult.isReactNativeProject) {
@@ -379,7 +380,7 @@ function generateReactNativeSection(analysisResult: AnalysisResult): string {
   return statsGrid + architectureSection + recommendationsSection;
 }
 
-function getReactNativeArchitectureBadgeClass(analysisResult: AnalysisResult): string {
+const getReactNativeArchitectureBadgeClass = (analysisResult: AnalysisResult): string => {
   const status = analysisResult.reactNative.newArchitectureStatus;
   switch (status) {
     case 'enabled': return 'success';
@@ -390,7 +391,7 @@ function getReactNativeArchitectureBadgeClass(analysisResult: AnalysisResult): s
   }
 }
 
-function getReactNativeArchitectureStatus(analysisResult: AnalysisResult): string {
+const getReactNativeArchitectureStatus = (analysisResult: AnalysisResult): string => {
   const status = analysisResult.reactNative.newArchitectureStatus;
   switch (status) {
     case 'enabled': return 'ON';
@@ -401,7 +402,7 @@ function getReactNativeArchitectureStatus(analysisResult: AnalysisResult): strin
   }
 }
 
-function getArchitectureStatusIcon(status: string): string {
+const getArchitectureStatusIcon = (status: string): string => {
   switch (status) {
     case 'enabled': return '✅';
     case 'disabled': return '❌';
@@ -411,7 +412,7 @@ function getArchitectureStatusIcon(status: string): string {
   }
 }
 
-function getArchitectureStatusColor(status: string): string {
+const getArchitectureStatusColor = (status: string): string => {
   switch (status) {
     case 'enabled': return 'rgba(40, 167, 69, 0.1)';
     case 'disabled': return 'rgba(255, 193, 7, 0.1)';
@@ -421,7 +422,7 @@ function getArchitectureStatusColor(status: string): string {
   }
 }
 
-function getArchitectureBorderColor(status: string): string {
+const getArchitectureBorderColor = (status: string): string => {
   switch (status) {
     case 'enabled': return '#28a745';
     case 'disabled': return '#ffc107';
@@ -431,7 +432,7 @@ function getArchitectureBorderColor(status: string): string {
   }
 }
 
-function getArchitectureStatusText(status: string): string {
+const getArchitectureStatusText = (status: string): string => {
   switch (status) {
     case 'enabled': return 'New Architecture is Enabled';
     case 'disabled': return 'New Architecture is Disabled';
@@ -441,7 +442,7 @@ function getArchitectureStatusText(status: string): string {
   }
 }
 
-function getArchitectureDescription(status: string): string {
+const getArchitectureDescription = (status: string): string => {
   switch (status) {
     case 'enabled':
       return `

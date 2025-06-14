@@ -1,7 +1,7 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
-export async function checkIOSNewArch(projectPath: string): Promise<boolean> {
+export const checkIOSNewArch = async (projectPath: string): Promise<boolean> => {
   try {
     const podfilePath = join(projectPath, 'ios', 'Podfile');
     
@@ -22,7 +22,7 @@ export async function checkIOSNewArch(projectPath: string): Promise<boolean> {
   }
 }
 
-export async function checkIOSHermesEnabled(projectPath: string): Promise<boolean> {
+export const checkIOSHermesEnabled = async (projectPath: string): Promise<boolean> => {
   try {
     const podfilePath = join(projectPath, 'ios', 'Podfile');
     
