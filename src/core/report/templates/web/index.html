@@ -9,102 +9,177 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🔍 React Native Inspect Report</h1>
-            <div class="meta">
+    <div class="app-layout">
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button class="drawer-toggle" id="drawerToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1>🔍 React Native Inspect</h1>
+        </div>
+
+        <!-- Drawer Sidebar -->
+        <div class="drawer" id="drawer">
+            <div class="drawer-header">
+                <h2>🔍 React Native Inspect</h2>
+                <button class="drawer-close" id="drawerClose">×</button>
+            </div>
+            
+            <div class="drawer-meta">
                 <div class="meta-item">
                     <strong>Generated</strong>
-                    {{GENERATED_DATE}}
+                    <span>{{GENERATED_DATE}}</span>
                 </div>
                 <div class="meta-item">
                     <strong>Project Path</strong>
-                    {{PROJECT_PATH}}
+                    <span>{{PROJECT_PATH}}</span>
                 </div>
                 <div class="meta-item">
                     <strong>Package Manager</strong>
-                    {{PACKAGE_MANAGER}}
+                    <span>{{PACKAGE_MANAGER}}</span>
                 </div>
             </div>
+
+            <nav class="drawer-nav">
+                <a href="#dependencies" class="nav-item active" data-section="dependencies">
+                    <div class="nav-icon">📦</div>
+                    <div class="nav-content">
+                        <div class="nav-title">Dependencies Analysis</div>
+                        <div class="nav-subtitle">{{OUTDATED_COUNT}} outdated packages</div>
+                    </div>
+                    <div class="nav-badge {{OUTDATED_BADGE_CLASS}}">{{OUTDATED_COUNT}}</div>
+                </a>
+                
+                <a href="#security" class="nav-item" data-section="security">
+                    <div class="nav-icon">🔒</div>
+                    <div class="nav-content">
+                        <div class="nav-title">Security Audit</div>
+                        <div class="nav-subtitle">{{TOTAL_VULNERABILITIES}} vulnerabilities</div>
+                    </div>
+                    <div class="nav-badge {{SECURITY_BADGE_CLASS}}">{{TOTAL_VULNERABILITIES}}</div>
+                </a>
+                
+                <a href="#react-native" class="nav-item" data-section="react-native">
+                    <div class="nav-icon">⚛️</div>
+                    <div class="nav-content">
+                        <div class="nav-title">React Native</div>
+                        <div class="nav-subtitle">Architecture & compatibility</div>
+                    </div>
+                    <div class="nav-badge {{RN_ARCHITECTURE_BADGE_CLASS}}">{{RN_ARCHITECTURE_STATUS}}</div>
+                </a>
+                
+                <a href="#summary" class="nav-item" data-section="summary">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-content">
+                        <div class="nav-title">Summary</div>
+                        <div class="nav-subtitle">Overview & recommendations</div>
+                    </div>
+                </a>
+            </nav>
         </div>
 
-        <!-- Tab Navigation -->
-        <div class="tab-container">
-            <div class="tab-nav">
-                <button class="tab-btn active" data-tab="dependencies">
-                    📦 Dependencies Analysis
-                    <span class="tab-badge {{OUTDATED_BADGE_CLASS}}">{{OUTDATED_COUNT}}</span>
-                </button>
-                <button class="tab-btn" data-tab="security">
-                    🔒 Security Audit
-                    <span class="tab-badge {{SECURITY_BADGE_CLASS}}">{{TOTAL_VULNERABILITIES}}</span>
-                </button>
-                <button class="tab-btn" data-tab="react-native">
-                    ⚛️ React Native
-                    <span class="tab-badge {{RN_ARCHITECTURE_BADGE_CLASS}}">{{RN_ARCHITECTURE_STATUS}}</span>
-                </button>
-                <button class="tab-btn" data-tab="summary">
-                    📊 Summary
-                </button>
-            </div>
+        <!-- Drawer Overlay -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
 
-            <!-- Dependencies Analysis Tab -->
-            <div class="tab-content active" id="dependencies">
-                <div class="section-content">
-                    <div class="stats-grid">
-                        <div class="stat-card">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dependencies Analysis Section -->
+            <div class="content-section active" id="dependencies">
+                <div class="section-header">
+                    <h1><span class="section-icon">📦</span> Dependencies Analysis</h1>
+                    <p class="section-description">Analyze your project dependencies for updates and potential issues</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-content">
                             <span class="stat-number">{{TOTAL_DEPENDENCIES}}</span>
                             <div class="stat-label">Dependencies</div>
                         </div>
-                        <div class="stat-card">
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔧</div>
+                        <div class="stat-content">
                             <span class="stat-number">{{TOTAL_DEV_DEPENDENCIES}}</span>
                             <div class="stat-label">Dev Dependencies</div>
                         </div>
-                        <div class="stat-card {{OUTDATED_BADGE_CLASS}}">
+                    </div>
+                    <div class="stat-card {{OUTDATED_BADGE_CLASS}}">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-content">
                             <span class="stat-number">{{OUTDATED_COUNT}}</span>
                             <div class="stat-label">Outdated Packages</div>
                         </div>
-                        <div class="stat-card {{MAJOR_UPDATES_BADGE_CLASS}}">
+                    </div>
+                    <div class="stat-card {{MAJOR_UPDATES_BADGE_CLASS}}">
+                        <div class="stat-icon">🚀</div>
+                        <div class="stat-content">
                             <span class="stat-number">{{MAJOR_UPDATES_COUNT}}</span>
                             <div class="stat-label">Major Updates</div>
                         </div>
                     </div>
+                </div>
 
+                <div class="content-body">
                     {{DEPENDENCIES_TABLE_SECTION}}
                 </div>
             </div>
 
-            <!-- Security Audit Tab -->
-            <div class="tab-content" id="security">
-                <div class="section-content">
+            <!-- Security Audit Section -->
+            <div class="content-section" id="security">
+                <div class="section-header">
+                    <h1><span class="section-icon">🔒</span> Security Audit</h1>
+                    <p class="section-description">Identify and address security vulnerabilities in your dependencies</p>
+                </div>
+
+                <div class="content-body">
                     {{SECURITY_AUDIT_SECTION}}
                 </div>
             </div>
 
-            <!-- React Native Tab -->
-            <div class="tab-content" id="react-native">
-                <div class="section-content">
+            <!-- React Native Section -->
+            <div class="content-section" id="react-native">
+                <div class="section-header">
+                    <h1><span class="section-icon">⚛️</span> React Native</h1>
+                    <p class="section-description">React Native specific analysis and compatibility checks</p>
+                </div>
+
+                <div class="content-body">
                     {{REACT_NATIVE_SECTION}}
                 </div>
             </div>
 
-            <!-- Summary Tab -->
-            <div class="tab-content" id="summary">
-                <div class="section-content">
-                    <div class="stats-grid">
-                        <div class="stat-card {{DEPENDENCIES_STATUS_BADGE_CLASS}}">
-                            <span class="stat-number">{{DEPENDENCIES_STATUS_ICON}}</span>
-                            <div class="stat-label">Dependencies Status</div>
-                        </div>
-                        <div class="stat-card {{SECURITY_STATUS_BADGE_CLASS}}">
-                            <span class="stat-number">{{SECURITY_STATUS_ICON}}</span>
-                            <div class="stat-label">Security Status</div>
+            <!-- Summary Section -->
+            <div class="content-section" id="summary">
+                <div class="section-header">
+                    <h1><span class="section-icon">📊</span> Summary</h1>
+                    <p class="section-description">Overview of your project health and actionable recommendations</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card {{DEPENDENCIES_STATUS_BADGE_CLASS}}">
+                        <div class="stat-icon">{{DEPENDENCIES_STATUS_ICON}}</div>
+                        <div class="stat-content">
+                            <span class="stat-number">Status</span>
+                            <div class="stat-label">Dependencies</div>
                         </div>
                     </div>
-                    
-                    <div style="margin-top: 30px; padding: 20px; background: rgba(52, 152, 219, 0.1); border-radius: 10px; border-left: 4px solid #3498db;">
-                        <h3 style="color: #2c3e50; margin-bottom: 15px;">Recommendations</h3>
-                        <ul style="color: #495057; line-height: 1.6;">
+                    <div class="stat-card {{SECURITY_STATUS_BADGE_CLASS}}">
+                        <div class="stat-icon">{{SECURITY_STATUS_ICON}}</div>
+                        <div class="stat-content">
+                            <span class="stat-number">Status</span>
+                            <div class="stat-label">Security</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-body">
+                    <div class="recommendations-card">
+                        <h3>📝 Recommendations</h3>
+                        <ul class="recommendations-list">
                             {{RECOMMENDATIONS}}
                         </ul>
                     </div>

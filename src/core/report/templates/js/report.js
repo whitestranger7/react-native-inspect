@@ -1,67 +1,158 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab switching functionality
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+    // DOM elements
+    const drawer = document.getElementById('drawer');
+    const drawerToggle = document.getElementById('drawerToggle');
+    const drawerClose = document.getElementById('drawerClose');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const navItems = document.querySelectorAll('.nav-item');
+    const contentSections = document.querySelectorAll('.content-section');
     
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const targetTab = this.getAttribute('data-tab');
-            
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-            
-            this.classList.add('active');
-            document.getElementById(targetTab).classList.add('active');
-            
-            document.querySelector('.tab-container').scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
+    // Drawer functionality
+    function openDrawer() {
+        drawer.classList.add('open');
+        drawerOverlay.classList.add('active');
+        drawerToggle.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDrawer() {
+        drawer.classList.remove('open');
+        drawerOverlay.classList.remove('active');
+        drawerToggle.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    // Event listeners for drawer
+    if (drawerToggle) {
+        drawerToggle.addEventListener('click', openDrawer);
+    }
+    
+    if (drawerClose) {
+        drawerClose.addEventListener('click', closeDrawer);
+    }
+    
+    if (drawerOverlay) {
+        drawerOverlay.addEventListener('click', closeDrawer);
+    }
+    
+    // Navigation functionality
+    function switchToSection(targetSection) {
+        // Remove active class from all nav items and content sections
+        navItems.forEach(item => item.classList.remove('active'));
+        contentSections.forEach(section => section.classList.remove('active'));
+        
+        // Add active class to target nav item and content section
+        const targetNavItem = document.querySelector(`[data-section="${targetSection}"]`);
+        const targetContentSection = document.getElementById(targetSection);
+        
+        if (targetNavItem) {
+            targetNavItem.classList.add('active');
+        }
+        
+        if (targetContentSection) {
+            targetContentSection.classList.add('active');
+        }
+        
+        // Close drawer on mobile after navigation
+        if (window.innerWidth <= 768) {
+            closeDrawer();
+        }
+        
+        // Smooth scroll to top
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+        
+        // Update URL hash
+        window.location.hash = targetSection;
+    }
+    
+    // Navigation item click handlers
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetSection = this.getAttribute('data-section');
+            switchToSection(targetSection);
         });
     });
     
-    // Keyboard navigation for tabs
+    // Handle direct URL hash navigation
+    function handleHashNavigation() {
+        const hash = window.location.hash.substring(1);
+        if (hash && document.getElementById(hash)) {
+            switchToSection(hash);
+        }
+    }
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashNavigation);
+    
+    // Handle initial page load
+    handleHashNavigation();
+    
+    // Keyboard navigation
     document.addEventListener('keydown', function(e) {
         if (e.ctrlKey || e.metaKey) {
-            const activeTab = document.querySelector('.tab-btn.active');
-            const tabIndex = Array.from(tabButtons).indexOf(activeTab);
+            const activeNavItem = document.querySelector('.nav-item.active');
+            const allNavItems = Array.from(navItems);
+            const currentIndex = allNavItems.indexOf(activeNavItem);
             
             switch(e.key) {
                 case '1':
                     e.preventDefault();
-                    tabButtons[0].click();
+                    switchToSection('dependencies');
                     break;
                 case '2':
                     e.preventDefault();
-                    if (tabButtons[1]) tabButtons[1].click();
+                    switchToSection('security');
                     break;
                 case '3':
                     e.preventDefault();
-                    if (tabButtons[2]) tabButtons[2].click();
+                    switchToSection('react-native');
+                    break;
+                case '4':
+                    e.preventDefault();
+                    switchToSection('summary');
                     break;
                 case 'ArrowLeft':
                     e.preventDefault();
-                    const prevIndex = tabIndex > 0 ? tabIndex - 1 : tabButtons.length - 1;
-                    tabButtons[prevIndex].click();
+                    const prevIndex = currentIndex > 0 ? currentIndex - 1 : allNavItems.length - 1;
+                    const prevSection = allNavItems[prevIndex].getAttribute('data-section');
+                    switchToSection(prevSection);
                     break;
                 case 'ArrowRight':
                     e.preventDefault();
-                    const nextIndex = tabIndex < tabButtons.length - 1 ? tabIndex + 1 : 0;
-                    tabButtons[nextIndex].click();
+                    const nextIndex = currentIndex < allNavItems.length - 1 ? currentIndex + 1 : 0;
+                    const nextSection = allNavItems[nextIndex].getAttribute('data-section');
+                    switchToSection(nextSection);
                     break;
             }
         }
+        
+        // Escape key to close drawer
+        if (e.key === 'Escape') {
+            closeDrawer();
+        }
     });
-
-    // Add scroll to top functionality
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            closeDrawer();
+        }
+    });
+    
+    // Scroll to top button
     const scrollToTopBtn = document.createElement('button');
     scrollToTopBtn.innerHTML = '↑';
     scrollToTopBtn.className = 'scroll-to-top';
+    scrollToTopBtn.setAttribute('aria-label', 'Scroll to top');
     scrollToTopBtn.style.cssText = `
         position: fixed;
         bottom: 20px;
         right: 20px;
-        background: #667eea;
+        background: var(--primary-color);
         color: white;
         border: none;
         border-radius: 50%;
@@ -69,16 +160,17 @@ document.addEventListener('DOMContentLoaded', function() {
         height: 50px;
         font-size: 20px;
         cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-medium);
         opacity: 0;
         visibility: hidden;
-        transition: all 0.3s ease;
+        transition: all var(--transition-speed) ease;
         z-index: 1000;
     `;
     
     document.body.appendChild(scrollToTopBtn);
     
     // Show/hide scroll to top button
+    let scrollTimeout;
     window.addEventListener('scroll', function() {
         if (window.pageYOffset > 300) {
             scrollToTopBtn.style.opacity = '1';
@@ -87,6 +179,13 @@ document.addEventListener('DOMContentLoaded', function() {
             scrollToTopBtn.style.opacity = '0';
             scrollToTopBtn.style.visibility = 'hidden';
         }
+        
+        // Add scrolling indicator
+        clearTimeout(scrollTimeout);
+        document.body.classList.add('scrolling');
+        scrollTimeout = setTimeout(() => {
+            document.body.classList.remove('scrolling');
+        }, 150);
     });
     
     // Scroll to top functionality
@@ -97,7 +196,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Add animation to stat cards
+    // Enhanced hover effects for scroll button
+    scrollToTopBtn.addEventListener('mouseenter', function() {
+        this.style.background = 'var(--secondary-color)';
+        this.style.transform = 'translateY(-2px) scale(1.05)';
+    });
+    
+    scrollToTopBtn.addEventListener('mouseleave', function() {
+        this.style.background = 'var(--primary-color)';
+        this.style.transform = 'translateY(0) scale(1)';
+    });
+    
+    // Intersection Observer for animations
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -106,163 +216,223 @@ document.addEventListener('DOMContentLoaded', function() {
     const observer = new IntersectionObserver(function(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
             }
         });
     }, observerOptions);
     
-    // Observe all stat cards and sections
-    document.querySelectorAll('.stat-card, .section').forEach(el => {
+    // Observe elements for animations
+    document.querySelectorAll('.stat-card, .content-body, .recommendations-card').forEach(el => {
+        el.style.cssText += `
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        `;
         observer.observe(el);
     });
     
-    // Add CSS animations
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .scroll-to-top:hover {
-            background: #5a67d8 !important;
-            transform: translateY(-2px);
-        }
-        
-        .badge {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .stat-card {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        
-        .section {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        
-        .tab-btn {
-            position: relative;
-        }
-        
-        .tab-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.1);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-            transform-origin: left;
-        }
-        
-        .tab-btn:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .package-link {
-            transition: all 0.2s ease;
-        }
-        
-        .package-link:hover {
-            transform: translateX(3px);
-        }
-        
-        .package-link strong {
-            pointer-events: none;
-        }
-    `;
-    document.head.appendChild(style);
-    
-    // Add table sorting functionality
-    const tables = document.querySelectorAll('table');
-    tables.forEach(table => {
-        const headers = table.querySelectorAll('th');
-        headers.forEach((header, index) => {
-            header.style.cursor = 'pointer';
-            header.addEventListener('click', () => sortTable(table, index));
-        });
-    });
-    
-    function sortTable(table, column) {
+    // Table sorting functionality
+    function sortTable(table, column, direction = 'asc') {
         const tbody = table.querySelector('tbody');
         const rows = Array.from(tbody.querySelectorAll('tr'));
         
-        const sortedRows = rows.sort((a, b) => {
-            const aText = a.cells[column].textContent.trim();
-            const bText = b.cells[column].textContent.trim();
+        rows.sort((a, b) => {
+            const aValue = a.cells[column].textContent.trim();
+            const bValue = b.cells[column].textContent.trim();
             
-            // Try to parse as numbers first
-            const aNum = parseFloat(aText);
-            const bNum = parseFloat(bText);
-            
-            if (!isNaN(aNum) && !isNaN(bNum)) {
-                return aNum - bNum;
+            // Handle numeric values
+            if (!isNaN(aValue) && !isNaN(bValue)) {
+                return direction === 'asc' ? aValue - bValue : bValue - aValue;
             }
             
-            // Fall back to string comparison
-            return aText.localeCompare(bText);
+            // Handle text values
+            if (direction === 'asc') {
+                return aValue.localeCompare(bValue);
+            } else {
+                return bValue.localeCompare(aValue);
+            }
         });
         
-        // Clear tbody and append sorted rows
-        tbody.innerHTML = '';
-        sortedRows.forEach(row => tbody.appendChild(row));
+        // Remove existing rows
+        rows.forEach(row => tbody.removeChild(row));
+        
+        // Add sorted rows
+        rows.forEach(row => tbody.appendChild(row));
     }
     
-    // Style package links
-    document.querySelectorAll('.package-link').forEach(packageLink => {
-        packageLink.style.textDecoration = 'none';
-        packageLink.style.color = '#667eea';
-        packageLink.style.fontWeight = 'bold';
-        packageLink.title = 'Click to view package on npm';
-        
-        packageLink.addEventListener('mouseenter', function() {
-            this.style.textDecoration = 'underline';
-            this.style.color = '#5a67d8';
-        });
-        
-        packageLink.addEventListener('mouseleave', function() {
-            this.style.textDecoration = 'none';
-            this.style.color = '#667eea';
+    // Add sorting to tables
+    document.querySelectorAll('table').forEach(table => {
+        const headers = table.querySelectorAll('th');
+        headers.forEach((header, index) => {
+            header.style.cursor = 'pointer';
+            header.style.userSelect = 'none';
+            header.setAttribute('data-sort', 'asc');
+            
+            // Add sort indicator
+            const sortIndicator = document.createElement('span');
+            sortIndicator.innerHTML = ' ↕';
+            sortIndicator.style.opacity = '0.5';
+            header.appendChild(sortIndicator);
+            
+            header.addEventListener('click', function() {
+                const currentSort = this.getAttribute('data-sort');
+                const newSort = currentSort === 'asc' ? 'desc' : 'asc';
+                
+                // Reset all headers
+                headers.forEach(h => {
+                    h.setAttribute('data-sort', 'asc');
+                    h.querySelector('span').innerHTML = ' ↕';
+                    h.querySelector('span').style.opacity = '0.5';
+                });
+                
+                // Update current header
+                this.setAttribute('data-sort', newSort);
+                this.querySelector('span').innerHTML = newSort === 'asc' ? ' ↑' : ' ↓';
+                this.querySelector('span').style.opacity = '1';
+                
+                // Sort table
+                sortTable(table, index, newSort);
+            });
         });
     });
     
-    // Add keyboard shortcuts help tooltip
-    const helpTooltip = document.createElement('div');
-    helpTooltip.innerHTML = `
-        <div style="position: fixed; bottom: 80px; right: 20px; background: rgba(0, 0, 0, 0.8); color: white; padding: 10px; border-radius: 8px; font-size: 0.8rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 1001;" id="keyboard-help">
-            <strong>Keyboard Shortcuts:</strong><br>
-            Ctrl/Cmd + 1, 2, 3: Switch tabs<br>
-            Ctrl/Cmd + ←/→: Navigate tabs
-        </div>
-    `;
-    document.body.appendChild(helpTooltip);
-    
-    // Show help on first visit
-    setTimeout(() => {
-        const help = document.getElementById('keyboard-help');
-        help.style.opacity = '1';
-        help.style.visibility = 'visible';
+    // Enhanced package link interactions
+    document.querySelectorAll('.package-link').forEach(link => {
+        link.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(3px)';
+        });
         
-        setTimeout(() => {
-            help.style.opacity = '0';
-            help.style.visibility = 'hidden';
-        }, 3000);
-    }, 1000);
+        link.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+    
+    // Add loading states and error handling
+    function showLoading(element) {
+        element.style.opacity = '0.5';
+        element.style.pointerEvents = 'none';
+    }
+    
+    function hideLoading(element) {
+        element.style.opacity = '1';
+        element.style.pointerEvents = 'auto';
+    }
+    
+    // Add tooltips for badges
+    document.querySelectorAll('.badge').forEach(badge => {
+        badge.addEventListener('mouseenter', function() {
+            if (this.classList.contains('critical')) {
+                this.title = 'Critical severity - Immediate action required';
+            } else if (this.classList.contains('high')) {
+                this.title = 'High severity - Should be addressed soon';
+            } else if (this.classList.contains('moderate')) {
+                this.title = 'Moderate severity - Consider addressing';
+            } else if (this.classList.contains('low')) {
+                this.title = 'Low severity - Low priority';
+            }
+        });
+    });
+    
+    // Add focus management for accessibility
+    function manageFocus() {
+        const activeSection = document.querySelector('.content-section.active');
+        if (activeSection) {
+            const firstFocusable = activeSection.querySelector('a, button, input, [tabindex]:not([tabindex="-1"])');
+            if (firstFocusable) {
+                firstFocusable.focus();
+            }
+        }
+    }
+    
+    // Enhanced error handling for external links
+    document.querySelectorAll('a[href^="http"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Add visual feedback
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 100);
+        });
+    });
+    
+    // Add print styles
+    const printStyles = document.createElement('style');
+    printStyles.textContent = `
+        @media print {
+            .drawer, .mobile-header, .scroll-to-top, .drawer-overlay {
+                display: none !important;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .content-section {
+                display: block !important;
+                page-break-before: always;
+                padding: 20px !important;
+            }
+            
+            .content-section:first-child {
+                page-break-before: auto;
+            }
+            
+            .section-header h1 {
+                color: #000 !important;
+            }
+            
+            .section-description {
+                color: #666 !important;
+            }
+        }
+    `;
+    document.head.appendChild(printStyles);
+    
+    // Initialize tooltips and accessibility features
+    document.querySelectorAll('[data-tooltip]').forEach(element => {
+        element.addEventListener('mouseenter', function() {
+            // Create tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = this.getAttribute('data-tooltip');
+            tooltip.style.cssText = `
+                position: absolute;
+                background: #333;
+                color: white;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 0.8rem;
+                z-index: 1000;
+                pointer-events: none;
+                white-space: nowrap;
+            `;
+            document.body.appendChild(tooltip);
+            
+            // Position tooltip
+            const rect = this.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = (rect.top - tooltip.offsetHeight - 5) + 'px';
+        });
+        
+        element.addEventListener('mouseleave', function() {
+            const tooltip = document.querySelector('.tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        });
+    });
+    
+    // Performance monitoring
+    if ('performance' in window) {
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const perfData = performance.getEntriesByType('navigation')[0];
+                console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+            }, 0);
+        });
+    }
+    
+    console.log('React Native Inspect Report initialized successfully');
 }); 
